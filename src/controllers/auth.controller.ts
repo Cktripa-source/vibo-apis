@@ -1,81 +1,78 @@
-import { Request, Response } from "express";
-import { z } from "zod";
-import bcrypt from "bcryptjs";
-import jwt, { Secret } from "jsonwebtoken";
-import { prisma } from "../config/env";
+// src/controllers/auth.controller.ts
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt, { SignOptions } from 'jsonwebtoken';
+import { prisma } from '../config/env';
+import { z } from 'zod';
 
-// DTO for validation
+// ✅ Zod DTOs
 const registerDto = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
   name: z.string().min(2),
-  role: z.enum(["ADMIN", "VENDOR", "AFFILIATE", "INFLUENCER", "BUYER"]),
+  email: z.string().email(),
+  password: z.string().min(6),
+  role: z.enum(['user', 'vendor', 'admin']).default('user'),
 });
 
+const loginDto = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+// ✅ Utility to read env safely
+function getEnvVar(key: string): string {
+  const val = process.env[key];
+  if (!val) throw new Error(`Missing environment variable: ${key}`);
+  return val;
+}
+
+const JWT_ACCESS_SECRET = getEnvVar('JWT_ACCESS_SECRET');
+const JWT_REFRESH_SECRET = getEnvVar('JWT_REFRESH_SECRET');
+const ACCESS_TOKEN_TTL: SignOptions['expiresIn'] =
+  (process.env.ACCESS_TOKEN_TTL || '15m') as SignOptions['expiresIn'];
+const REFRESH_TOKEN_TTL: SignOptions['expiresIn'] =
+  (process.env.REFRESH_TOKEN_TTL || '7d') as SignOptions['expiresIn'];
+
+// ✅ Register
 export const register = async (req: Request, res: Response) => {
   try {
-    const data = registerDto.parse(req.body);
+    const { name, email, password, role } = registerDto.parse(req.body);
 
-    // check if email exists
-    const existing = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
-    if (existing) {
-      return res.status(409).json({ message: "Email already used" });
-    }
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) return res.status(400).json({ message: 'Email already registered' });
 
-    // hash password
-    const passwordHash = await bcrypt.hash(data.password, 10);
+    const hash = await bcrypt.hash(password, 10);
 
-    // create user
     const user = await prisma.user.create({
-      data: {
-        email: data.email,
-        name: data.name,
-        role: data.role,
-        passwordHash,
-        isVerified: false,
-      },
+      data: { name, email, passwordHash: hash, role },
     });
 
-    res
-      .status(201)
-      .json({ id: user.id, email: user.email, role: user.role });
+    res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
   } catch (err: any) {
     res.status(400).json({ message: err.message });
   }
 };
 
-const loginDto = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
+// ✅ Login
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = loginDto.parse(req.body);
 
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
-    // ✅ Fix: cast secrets as jwt.Secret
     const access = jwt.sign(
       { sub: user.id, role: user.role, name: user.name },
-      process.env.JWT_ACCESS_SECRET as Secret,
-      { expiresIn: process.env.ACCESS_TOKEN_TTL || "15m" }
+      JWT_ACCESS_SECRET,
+      { expiresIn: ACCESS_TOKEN_TTL }
     );
 
     const refresh = jwt.sign(
       { sub: user.id },
-      process.env.JWT_REFRESH_SECRET as Secret,
-      { expiresIn: process.env.REFRESH_TOKEN_TTL || "7d" }
+      JWT_REFRESH_SECRET,
+      { expiresIn: REFRESH_TOKEN_TTL }
     );
 
     res.json({ access, refresh });
@@ -84,10 +81,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// ✅ Logout
 export const logout = async (req: Request, res: Response) => {
-  res.status(200).json({
-    message:
-      "Logged out successfully. Please remove tokens from client storage.",
-    success: true,
-  });
+  res.json({ message: 'Logged out' });
 };
