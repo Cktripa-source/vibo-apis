@@ -75,15 +75,6 @@ model Product {
   reviewIds        String[] @db.ObjectId
 }
 
-model AffiliateLink {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  code        String   @unique
-  productId   String   @db.ObjectId
-  affiliateId String   @db.ObjectId
-  clickIds    String[] @db.ObjectId
-  createdAt   DateTime @default(now())
-}
-
 
 model AffiliateLink {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
