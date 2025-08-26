@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/env.js';
+import { prisma } from '../config/env';
 import { z } from 'zod';
 
 const orderDto = z.object({

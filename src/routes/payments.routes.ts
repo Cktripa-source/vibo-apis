@@ -1,7 +1,7 @@
 // src/routes/payments.routes.ts
 import { Router } from 'express';
-import { createPaymentIntent } from '../controllers/payments.controller.js';
-import { stripeWebhook } from '../webhooks/stripe.webhook.js';
+import { createPaymentIntent } from '../controllers/payments.controller';
+import { stripeWebhook } from '../webhooks/stripe.webhook';
 
 const r = Router();
 r.post('/intent', createPaymentIntent);

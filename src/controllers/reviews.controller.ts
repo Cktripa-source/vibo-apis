@@ -1,7 +1,7 @@
 // src/controllers/reviews.controller.ts
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../config/env.js';
+import { prisma } from '../config/env';
 
 const reviewDto = z.object({ productId: z.string(), rating: z.number().int().min(1).max(5), comment: z.string().min(4) });
 export const createReview = async (req: Request, res: Response) => {

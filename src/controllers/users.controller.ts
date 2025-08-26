@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../config/env.js';
+import { prisma } from '../config/env';
 
 const updateUserDto = z.object({
   name: z.string().min(2).optional(),

@@ -1,7 +1,7 @@
 // src/controllers/campaigns.controller.ts
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../config/env.js';
+import { prisma } from '../config/env';
 
 const createCampaignDto = z.object({
   title: z.string().min(3),
