@@ -5,8 +5,8 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import path from "path";
 import { fileURLToPath } from "url";
-import { errorHandler } from './middleware/error';
-import router from './routes';
+import { errorHandler } from './middleware/error.js';
+import router from './routes/upload.routes.js';
 
 // Fix __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
