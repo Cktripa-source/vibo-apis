@@ -1,8 +1,8 @@
 // src/routes/admin.routes.ts
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth';
-import { allow } from '../middleware/rbac';
-import { prisma } from '../config/env';
+import { requireAuth } from '../middleware/auth.js';
+import { allow } from '../middleware/rbac.js';
+import { prisma } from '../config/env.js';
 
 const r = Router();
 r.use(requireAuth, allow('ADMIN'));

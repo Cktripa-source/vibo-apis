@@ -1,7 +1,7 @@
 // src/controllers/affiliates.controller.ts
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { prisma } from '../config/env';
+import { prisma } from '../config/env.js';
 import { nanoid } from 'nanoid';
 
 export const createAffiliateLink = async (req: Request, res: Response) => {

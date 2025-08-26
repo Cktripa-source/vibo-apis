@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { upload } from "../middleware/upload";
-import { requireAuth } from "../middleware/auth";
+import { upload } from "../middleware/upload.js";
+import { requireAuth } from "../middleware/auth.js";
 import path from "path";
 import { fileURLToPath } from "url";
 

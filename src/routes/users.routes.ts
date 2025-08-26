@@ -1,8 +1,8 @@
 // users.routes.ts
 import { Router } from 'express';
-import { listUsers, getUser, updateUser, deleteUser } from '../controllers/users.controller';
-import { requireAuth } from '../middleware/auth';
-import { allow } from '../middleware/rbac';
+import { listUsers, getUser, updateUser, deleteUser } from '../controllers/users.controller.js';
+import { requireAuth } from '../middleware/auth.js';
+import { allow } from '../middleware/rbac.js';
 
 const r = Router();
 

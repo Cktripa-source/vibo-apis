@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { prisma } from "../config/env";
+import { prisma } from "../config/env.js";
 
 const productDto = z.object({
   title: z.string().min(2),

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { createProduct, listProducts, approveProduct } from '../controllers/products.controller';
-import { requireAuth } from '../middleware/auth';
-import { allow } from '../middleware/rbac';
-import { upload } from '../middleware/upload';
+import { createProduct, listProducts, approveProduct } from '../controllers/products.controller.js';
+import { requireAuth } from '../middleware/auth.js';
+import { allow } from '../middleware/rbac.js';
+import { upload } from '../middleware/upload.js';
 
 const r = Router();
 

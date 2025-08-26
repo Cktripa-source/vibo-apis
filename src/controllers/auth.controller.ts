@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { prisma } from '../config/env';
+import { prisma } from '../config/env.js';
 import { z } from 'zod';
 
 // ✅ Zod DTOs
