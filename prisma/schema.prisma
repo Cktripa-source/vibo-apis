@@ -41,45 +41,45 @@ model User {
   updatedAt    DateTime @updatedAt
 
   // Relations by IDs
-  productIds       String[]   @db.ObjectId
-  affiliateId      String?    @db.ObjectId
-  influencerId     String?    @db.ObjectId
-  orderIds         String[]   @db.ObjectId
-  reviewIds        String[]   @db.ObjectId
-  transactionIds   String[]   @db.ObjectId
-  vendorCampaignIds String[]  @db.ObjectId
+  productIds        String[] @db.ObjectId
+  affiliateId       String?  @db.ObjectId
+  influencerId      String?  @db.ObjectId
+  orderIds          String[] @db.ObjectId
+  reviewIds         String[] @db.ObjectId
+  transactionIds    String[] @db.ObjectId
+  vendorCampaignIds String[] @db.ObjectId
 }
 
 model Product {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  vendorId    String   @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  vendorId    String  @db.ObjectId
   title       String
   description String
   priceCents  Int
-  currency    String   @default("RWF")
+  currency    String  @default("RWF")
   stock       Int
   category    String
   imageUrl    String?
   digitalUrl  String?
-  isApproved  Boolean  @default(false)
+  isApproved  Boolean @default(false)
 
   // Affiliate settings
   isAffiliatePromotable Boolean @default(false)
-  commissionPercent     Float?  // e.g. 10 = 10% commission
+  commissionPercent     Float? // e.g. 10 = 10% commission
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  orderItemIds     String[] @db.ObjectId
-  affiliateLinkIds String[] @db.ObjectId
-  reviewIds        String[] @db.ObjectId
+  orderItemIds     String[]        @db.ObjectId
+  affiliateLinkIds AffiliateLink[] // <- fixed relation type
+  reviewIds        String[]        @db.ObjectId
 }
-
 
 model AffiliateLink {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   code        String   @unique
   productId   String   @db.ObjectId
+  product     Product  @relation(fields: [productId], references: [id])
   affiliateId String   @db.ObjectId
   clickIds    String[] @db.ObjectId
   createdAt   DateTime @default(now())
@@ -96,24 +96,24 @@ model Click {
 }
 
 model Influencer {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @unique @db.ObjectId
-  niche     String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  niche       String?
   campaignIds String[] @db.ObjectId
 }
 
 model Campaign {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  vendorId     String   @db.ObjectId
-  title        String
-  description  String
-  budgetCents  Int
-  status       String   @default("OPEN")
-  target       String?
-  influencerId String?  @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  vendorId      String   @db.ObjectId
+  title         String
+  description   String
+  budgetCents   Int
+  status        String   @default("OPEN")
+  target        String?
+  influencerId  String?  @db.ObjectId
   engagementIds String[] @db.ObjectId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Engagement {
@@ -125,25 +125,25 @@ model Engagement {
 }
 
 model Order {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  buyerId     String       @db.ObjectId
-  status      OrderStatus  @default(PENDING)
-  totalCents  Int
-  currency    String       @default("RWF")
-  affiliateId String?      @db.ObjectId
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  itemIds     String[]     @db.ObjectId
-  transactionId String?    @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  buyerId       String      @db.ObjectId
+  status        OrderStatus @default(PENDING)
+  totalCents    Int
+  currency      String      @default("RWF")
+  affiliateId   String?     @db.ObjectId
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  itemIds       String[]    @db.ObjectId
+  transactionId String?     @db.ObjectId
 }
 
 model OrderItem {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  orderId    String  @db.ObjectId
-  productId  String  @db.ObjectId
-  quantity   Int     @default(1)
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String @db.ObjectId
+  productId  String @db.ObjectId
+  quantity   Int    @default(1)
   priceCents Int
-  currency   String  @default("RWF")
+  currency   String @default("RWF")
 }
 
 model Review {
