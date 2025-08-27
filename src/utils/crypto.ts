@@ -51,23 +51,23 @@ export function verifyWebhookSignature(payload: string, signature: string, secre
 }
 
 /**
- * Encrypt sensitive data
+ * Encrypt sensitive data using AES-256-CBC
  */
 export function encrypt(text: string, key: string): { encrypted: string; iv: string } {
   const algorithm = 'aes-256-cbc';
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipher(algorithm, key);
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key.slice(0, 32)), iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
   return { encrypted, iv: iv.toString('hex') };
 }
 
 /**
- * Decrypt sensitive data
+ * Decrypt sensitive data using AES-256-CBC
  */
 export function decrypt(encrypted: string, key: string, iv: string): string {
   const algorithm = 'aes-256-cbc';
-  const decipher = crypto.createDecipher(algorithm, key);
+  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(key.slice(0, 32)), Buffer.from(iv, 'hex'));
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;

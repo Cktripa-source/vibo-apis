@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { prisma } from '../config/env';
 
 // ---------------- Register ----------------
@@ -10,7 +10,7 @@ const registerDto = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(2),
-  role: z.enum(['ADMIN','VENDOR','AFFILIATE','INFLUENCER','BUYER'])
+  role: z.enum(['ADMIN', 'VENDOR', 'AFFILIATE', 'INFLUENCER', 'BUYER'])
 });
 
 export const register = async (req: Request, res: Response) => {
@@ -61,19 +61,20 @@ export const login = async (req: Request, res: Response) => {
   const accessPayload = { sub: user.id, role: user.role, name: user.name };
   const refreshPayload = { sub: user.id };
 
-  const accessOptions: SignOptions = { expiresIn: process.env.ACCESS_TOKEN_TTL || '15m' };
-  const refreshOptions: SignOptions = { expiresIn: process.env.REFRESH_TOKEN_TTL || '7d' };
+  // Fix: Use string literals directly instead of environment variables with fallbacks
+  const accessTTL = process.env.ACCESS_TOKEN_TTL || '15m';
+  const refreshTTL = process.env.REFRESH_TOKEN_TTL || '7d';
 
-  const access = jwt.sign(accessPayload, process.env.JWT_ACCESS_SECRET, accessOptions);
-  const refresh = jwt.sign(refreshPayload, process.env.JWT_REFRESH_SECRET, refreshOptions);
+  const access = jwt.sign(accessPayload, process.env.JWT_ACCESS_SECRET, { expiresIn: accessTTL });
+  const refresh = jwt.sign(refreshPayload, process.env.JWT_REFRESH_SECRET, { expiresIn: refreshTTL });
 
   res.json({ access, refresh });
 };
 
 // ---------------- Logout ----------------
 export const logout = async (_req: Request, res: Response) => {
-  res.status(200).json({ 
+  res.status(200).json({
     message: 'Logged out successfully. Please remove tokens from client storage.',
-    success: true 
+    success: true
   });
 };
