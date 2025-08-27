@@ -85,6 +85,7 @@ model AffiliateLink {
   createdAt   DateTime @default(now())
 }
 
+
 model Click {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   affiliateLinkId String   @db.ObjectId
