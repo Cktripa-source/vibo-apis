@@ -4,15 +4,15 @@
   "description": "Multi-role marketplace backend with affiliate tracking",
   "type": "module",
   "main": "dist/server.js",
- "scripts": {
-  "dev": "nodemon --watch \"src/**/*.ts\" --exec tsx src/server.ts",
-  "build": "tsc",
-  "vercel-build": "tsc",
-  "postinstall": "prisma generate && npm run build",
-  "start": "npm run build && node dist/server.js"
-}
-
-,
+  "scripts": {
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec tsx src/server.ts",
+    "build": "tsc && node scripts/copy-static.js",
+    "vercel-build": "npm run build",
+    "postinstall": "prisma generate",
+    "start": "node dist/server.js",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
+  },
   "keywords": [
     "affiliate",
     "marketplace",
